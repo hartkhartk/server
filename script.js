@@ -37,15 +37,8 @@ function getNetworkErrorMessage(err) {
     return err.message;
 }
 
-function formatResponseBody(data) {
-    if (data.success && data.file !== undefined) {
-        if (typeof data.file === "string") {
-            return data.file;
-        }
-        return JSON.stringify(data.file, null, 2);
-    }
-
-    return JSON.stringify(data, null, 2);
+function formatResponseBody(data, status) {
+    return JSON.stringify({ status, ...data }, null, 2);
 }
 
 function showResponse(data, status) {
@@ -54,11 +47,8 @@ function showResponse(data, status) {
     responseSection.classList.remove("hidden", "success", "error");
     responseSection.classList.add(isSuccess ? "success" : "error");
 
-    responseStatus.textContent = isSuccess
-        ? `הצלחה (${status})`
-        : `שגיאה (${status})`;
-
-    responseBody.textContent = formatResponseBody(data);
+    responseStatus.textContent = isSuccess ? "הצלחה" : "שגיאה";
+    responseBody.textContent = formatResponseBody(data, status);
 }
 
 uploadForm.addEventListener("submit", async (event) => {
@@ -87,7 +77,7 @@ uploadForm.addEventListener("submit", async (event) => {
             responseSection.classList.remove("hidden", "success");
             responseSection.classList.add("error");
             responseStatus.textContent = "שגיאה";
-            responseBody.textContent = message;
+            responseBody.textContent = formatResponseBody({ error: message }, "—");
         }
 
         showToast(message, "error");
