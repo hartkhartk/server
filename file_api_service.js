@@ -53,10 +53,18 @@ export const uploadUrl = async (url, token) => {
     return {
         data: {
             success: false,
-            error: errorData.message || "שגיאה בהפעלת הטריגר",
+            error: getDispatchErrorMessage(response.status, errorData.message),
             url,
         },
         ok: false,
         status: response.status,
     };
 };
+
+function getDispatchErrorMessage(status, message) {
+    if (status === 403 && message === "Resource not accessible by personal access token") {
+        return "ל-token חסרה הרשאת Contents (Read and write) ל-repo server. הרשאת Actions בלבד לא מספיקה.";
+    }
+
+    return message || "שגיאה בהפעלת הטריגר";
+}

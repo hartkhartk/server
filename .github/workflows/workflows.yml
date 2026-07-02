@@ -1,29 +1,20 @@
-name: Download Job
+name: Upload URL
 
 on:
   repository_dispatch:
-    types: [download_request]
+    types: [proxy_request]
 
 jobs:
-  download:
+  upload:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download file
+      - name: Send URL to server
         run: |
-          mkdir -p downloads
-
           URL="${{ github.event.client_payload.url }}"
-          REQ_ID="${{ github.event.client_payload.req_id }}"
+          echo "Sending URL: $URL"
 
-          echo "Downloading: $URL"
-
-          curl -L --max-time 60 -o "downloads/file" "$URL"
-
-          echo "$REQ_ID" > downloads/request_id.txt
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: result-${{ github.event.client_payload.req_id }}
-          path: downloads/
+          curl -X POST "https://drive-ygsv.onrender.com/upload" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "$URL" '{url: $url}')" \
+            --fail-with-body \
+            --show-error
