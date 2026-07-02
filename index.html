@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <h1>ניהול קבצים</h1>
-            <p>העלאת קישורים וצפייה ברשימת הקבצים</p>
+            <p>העלאת קישורים</p>
         </header>
 
         <div id="toast" class="toast" role="status"></div>
@@ -29,14 +29,10 @@
             </form>
         </section>
 
-        <section class="card">
-            <div class="files-header">
-                <h2>קבצים</h2>
-                <button type="button" id="refresh-btn" class="secondary">רענן</button>
-            </div>
-            <div id="files-container">
-                <p class="loading">טוען...</p>
-            </div>
+        <section id="response-section" class="card response-section hidden">
+            <h2>תגובת השרת</h2>
+            <p id="response-status" class="response-status"></p>
+            <pre id="response-body" class="response-body"></pre>
         </section>
     </div>
 

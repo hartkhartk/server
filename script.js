@@ -1,11 +1,12 @@
-import { uploadUrl, getFiles } from "./file_api_service.js";
+import { uploadUrl } from "./file_api_service.js";
 
 const toast = document.getElementById("toast");
 const uploadForm = document.getElementById("upload-form");
 const urlInput = document.getElementById("url-input");
 const uploadBtn = document.getElementById("upload-btn");
-const refreshBtn = document.getElementById("refresh-btn");
-const filesContainer = document.getElementById("files-container");
+const responseSection = document.getElementById("response-section");
+const responseStatus = document.getElementById("response-status");
+const responseBody = document.getElementById("response-body");
 
 let toastTimer;
 
@@ -25,66 +26,28 @@ function extractError(data) {
     return "שגיאה לא ידועה";
 }
 
-function normalizeFiles(data) {
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data?.files)) return data.files;
-    if (Array.isArray(data?.data)) return data.data;
-    return [];
+function formatResponseBody(data) {
+    if (data.success && data.file !== undefined) {
+        if (typeof data.file === "string") {
+            return data.file;
+        }
+        return JSON.stringify(data.file, null, 2);
+    }
+
+    return JSON.stringify(data, null, 2);
 }
 
-function renderFiles(data) {
-    const files = normalizeFiles(data);
+function showResponse(data, status) {
+    const isSuccess = data.success === true;
 
-    if (files.length === 0) {
-        filesContainer.innerHTML = '<p class="empty-state">אין קבצים להצגה</p>';
-        return;
-    }
+    responseSection.classList.remove("hidden", "success", "error");
+    responseSection.classList.add(isSuccess ? "success" : "error");
 
-    const list = document.createElement("ul");
-    list.className = "files-list";
+    responseStatus.textContent = isSuccess
+        ? `הצלחה (${status})`
+        : `שגיאה (${status})`;
 
-    for (const file of files) {
-        const item = document.createElement("li");
-        item.className = "file-item";
-
-        const name = file.name || file.filename || file.url || file.link || "קובץ";
-        const link = file.url || file.link || file.download_url || file.path;
-
-        if (link) {
-            const anchor = document.createElement("a");
-            anchor.href = link;
-            anchor.target = "_blank";
-            anchor.rel = "noopener noreferrer";
-            anchor.textContent = name;
-            item.appendChild(anchor);
-        } else {
-            item.textContent = name;
-        }
-
-        list.appendChild(item);
-    }
-
-    filesContainer.innerHTML = "";
-    filesContainer.appendChild(list);
-}
-
-async function loadFiles() {
-    refreshBtn.disabled = true;
-    filesContainer.innerHTML = '<p class="loading">טוען...</p>';
-
-    try {
-        const { data, ok } = await getFiles();
-
-        if (!ok) {
-            throw new Error(extractError(data));
-        }
-
-        renderFiles(data);
-    } catch (err) {
-        filesContainer.innerHTML = `<p class="empty-state">${err.message}</p>`;
-    } finally {
-        refreshBtn.disabled = false;
-    }
+    responseBody.textContent = formatResponseBody(data);
 }
 
 uploadForm.addEventListener("submit", async (event) => {
@@ -97,22 +60,23 @@ uploadForm.addEventListener("submit", async (event) => {
     uploadBtn.textContent = "מעלה...";
 
     try {
-        const { data, ok } = await uploadUrl(url);
+        const { data, status } = await uploadUrl(url);
+        showResponse(data, status);
 
-        if (!ok) {
-            throw new Error(extractError(data));
+        if (data.success) {
+            showToast("הקובץ הועלה בהצלחה", "success");
+            urlInput.value = "";
+        } else {
+            showToast(extractError(data), "error");
         }
-
-        showToast("הקובץ הועלה בהצלחה", "success");
-        urlInput.value = "";
-        await loadFiles();
     } catch (err) {
+        responseSection.classList.remove("hidden", "success");
+        responseSection.classList.add("error");
+        responseStatus.textContent = "שגיאה";
+        responseBody.textContent = err.message;
         showToast(err.message, "error");
     } finally {
         uploadBtn.disabled = false;
         uploadBtn.textContent = "העלה";
     }
 });
-
-refreshBtn.addEventListener("click", loadFiles);
-loadFiles();

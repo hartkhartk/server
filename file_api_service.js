@@ -8,8 +8,3 @@ export const uploadUrl = async (url) => {
     });
     return { data: await response.json(), ok: response.ok, status: response.status };
 };
-
-export const getFiles = async () => {
-    const response = await fetch(`${FILE_API_URL}/files`);
-    return { data: await response.json(), ok: response.ok, status: response.status };
-};
