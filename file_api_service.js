@@ -1,4 +1,4 @@
-const GITHUB_OWNER = "hartkkuh";
+const GITHUB_OWNER = "hartkhartk";
 const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
 
