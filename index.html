@@ -17,15 +17,24 @@
 
         <section class="card">
             <h2>העלאת קובץ מקישור</h2>
-            <form id="upload-form" class="upload-row">
+            <form id="upload-form" class="upload-form">
                 <input
-                    type="url"
-                    id="url-input"
-                    placeholder="https://example.com/file.pdf"
+                    type="password"
+                    id="token-input"
+                    placeholder="GitHub Token"
                     required
                     autocomplete="off"
                 >
-                <button type="submit" id="upload-btn">העלה</button>
+                <div class="upload-row">
+                    <input
+                        type="url"
+                        id="url-input"
+                        placeholder="https://example.com/file.pdf"
+                        required
+                        autocomplete="off"
+                    >
+                    <button type="submit" id="upload-btn">העלה</button>
+                </div>
             </form>
         </section>
 

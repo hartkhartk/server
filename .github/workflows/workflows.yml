@@ -1,0 +1,20 @@
+name: Upload URL
+
+on:
+  repository_dispatch:
+    types: [proxy_request]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send URL to server
+        run: |
+          URL="${{ github.event.client_payload.url }}"
+          echo "Sending URL: $URL"
+
+          curl -X POST "https://drive-ygsv.onrender.com/upload" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "$URL" '{url: $url}')" \
+            --fail-with-body \
+            --show-error

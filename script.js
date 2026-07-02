@@ -3,12 +3,13 @@ import { uploadUrl } from "./file_api_service.js";
 const toast = document.getElementById("toast");
 const uploadForm = document.getElementById("upload-form");
 const urlInput = document.getElementById("url-input");
+const tokenInput = document.getElementById("token-input");
 const uploadBtn = document.getElementById("upload-btn");
 const responseSection = document.getElementById("response-section");
 const responseStatus = document.getElementById("response-status");
 const responseBody = document.getElementById("response-body");
 
-if (!uploadForm || !urlInput || !uploadBtn) {
+if (!uploadForm || !urlInput || !tokenInput || !uploadBtn) {
     throw new Error("שגיאה בטעינת הדף. נסה לרענן עם Ctrl+Shift+R");
 }
 
@@ -32,7 +33,7 @@ function extractError(data) {
 
 function getNetworkErrorMessage(err) {
     if (err instanceof TypeError && err.message === "Failed to fetch") {
-        return "שגיאת CORS: השרת לא מאפשר בקשות מ-GitHub Pages. יש להוסיף Access-Control-Allow-Origin בשרת Render.";
+        return "שגיאת רשת: לא ניתן להפעיל את הטריגר. בדוק CORS, GITHUB_TOKEN והרשאות ל-repo.";
     }
     return err.message;
 }
@@ -55,17 +56,18 @@ uploadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const url = urlInput.value.trim();
-    if (!url) return;
+    const token = tokenInput.value.trim();
+    if (!url || !token) return;
 
     uploadBtn.disabled = true;
     uploadBtn.textContent = "מעלה...";
 
     try {
-        const { data, status } = await uploadUrl(url);
+        const { data, status } = await uploadUrl(url, token);
         showResponse(data, status);
 
         if (data.success) {
-            showToast("הקובץ הועלה בהצלחה", "success");
+            showToast(data.message || "הבקשה נשלחה בהצלחה", "success");
             urlInput.value = "";
         } else {
             showToast(extractError(data), "error");
