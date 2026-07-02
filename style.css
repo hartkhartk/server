@@ -191,6 +191,8 @@ button:disabled {
 .home-actions {
     display: flex;
     justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .home-link {

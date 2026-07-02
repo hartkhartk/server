@@ -1,8 +1,9 @@
 const GITHUB_OWNER = "hartkhartk";
 const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
+const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 
-export const uploadUrl = async (url, token) => {
+async function dispatchUrl(url, token, eventType) {
     if (!token) {
         return {
             data: {
@@ -25,7 +26,7 @@ export const uploadUrl = async (url, token) => {
                 "X-GitHub-Api-Version": "2022-11-28",
             },
             body: JSON.stringify({
-                event_type: DISPATCH_EVENT,
+                event_type: eventType,
                 client_payload: { url },
             }),
         }
@@ -59,7 +60,10 @@ export const uploadUrl = async (url, token) => {
         ok: false,
         status: response.status,
     };
-};
+}
+
+export const uploadUrl = (url, token) => dispatchUrl(url, token, DISPATCH_EVENT);
+export const uploadYoutube = (url, token) => dispatchUrl(url, token, YOUTUBE_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {
