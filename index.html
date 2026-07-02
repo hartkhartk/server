@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול קבצים</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ניהול קבצים</h1>
+            <p>העלאת קישורים וצפייה ברשימת הקבצים</p>
+        </header>
+
+        <div id="toast" class="toast" role="status"></div>
+
+        <section class="card">
+            <h2>העלאת קובץ מקישור</h2>
+            <form id="upload-form" class="upload-row">
+                <input
+                    type="url"
+                    id="url-input"
+                    placeholder="https://example.com/file.pdf"
+                    required
+                    autocomplete="off"
+                >
+                <button type="submit" id="upload-btn">העלה</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <div class="files-header">
+                <h2>קבצים</h2>
+                <button type="button" id="refresh-btn" class="secondary">רענן</button>
+            </div>
+            <div id="files-container">
+                <p class="loading">טוען...</p>
+            </div>
+        </section>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
