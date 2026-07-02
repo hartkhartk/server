@@ -8,6 +8,10 @@ const responseSection = document.getElementById("response-section");
 const responseStatus = document.getElementById("response-status");
 const responseBody = document.getElementById("response-body");
 
+if (!uploadForm || !urlInput || !uploadBtn) {
+    throw new Error("שגיאה בטעינת הדף. נסה לרענן עם Ctrl+Shift+R");
+}
+
 let toastTimer;
 
 function showToast(message, type = "success") {
@@ -24,6 +28,13 @@ function extractError(data) {
     if (data?.error) return data.error;
     if (data?.message) return data.message;
     return "שגיאה לא ידועה";
+}
+
+function getNetworkErrorMessage(err) {
+    if (err instanceof TypeError && err.message === "Failed to fetch") {
+        return "שגיאת CORS: השרת לא מאפשר בקשות מ-GitHub Pages. יש להוסיף Access-Control-Allow-Origin בשרת Render.";
+    }
+    return err.message;
 }
 
 function formatResponseBody(data) {
@@ -70,11 +81,16 @@ uploadForm.addEventListener("submit", async (event) => {
             showToast(extractError(data), "error");
         }
     } catch (err) {
-        responseSection.classList.remove("hidden", "success");
-        responseSection.classList.add("error");
-        responseStatus.textContent = "שגיאה";
-        responseBody.textContent = err.message;
-        showToast(err.message, "error");
+        const message = getNetworkErrorMessage(err);
+
+        if (responseSection && responseStatus && responseBody) {
+            responseSection.classList.remove("hidden", "success");
+            responseSection.classList.add("error");
+            responseStatus.textContent = "שגיאה";
+            responseBody.textContent = message;
+        }
+
+        showToast(message, "error");
     } finally {
         uploadBtn.disabled = false;
         uploadBtn.textContent = "העלה";
