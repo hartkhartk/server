@@ -188,12 +188,35 @@ button:disabled {
     overflow-x: auto;
 }
 
+.home-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.home-link {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.home-link:hover {
+    background: var(--accent-hover);
+}
+
 @media (max-width: 540px) {
     .upload-row {
         flex-direction: column;
     }
 
-    button {
+    button,
+    .home-link {
         width: 100%;
+        text-align: center;
     }
 }

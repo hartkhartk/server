@@ -10,41 +10,12 @@
     <div class="container">
         <header>
             <h1>ניהול קבצים</h1>
-            <p>העלאת קישורים</p>
+            <p>ברוכים הבאים</p>
         </header>
 
-        <div id="toast" class="toast" role="status"></div>
-
-        <section class="card">
-            <h2>העלאת קובץ מקישור</h2>
-            <form id="upload-form" class="upload-form">
-                <input
-                    type="password"
-                    id="token-input"
-                    placeholder="GitHub Token"
-                    required
-                    autocomplete="off"
-                >
-                <div class="upload-row">
-                    <input
-                        type="url"
-                        id="url-input"
-                        placeholder="https://example.com/file.pdf"
-                        required
-                        autocomplete="off"
-                    >
-                    <button type="submit" id="upload-btn">העלה</button>
-                </div>
-            </form>
-        </section>
-
-        <section id="response-section" class="card response-section hidden">
-            <h2>תגובת השרת</h2>
-            <p id="response-status" class="response-status"></p>
-            <pre id="response-body" class="response-body"></pre>
+        <section class="card home-actions">
+            <a class="home-link" href="/url/">העלאת קישור</a>
         </section>
     </div>
-
-    <script type="module" src="script.js"></script>
 </body>
 </html>

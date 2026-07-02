@@ -1,4 +1,4 @@
-import { uploadUrl } from "./file_api_service.js";
+import { uploadUrl } from "../file_api_service.js";
 
 const toast = document.getElementById("toast");
 const uploadForm = document.getElementById("upload-form");
