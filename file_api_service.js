@@ -91,3 +91,4 @@ function getDispatchErrorMessage(status, message) {
     return message || "שגיאה בהפעלת הטריגר";
 }
 
+
