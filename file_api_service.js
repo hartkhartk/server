@@ -15,7 +15,7 @@ async function dispatchUrl(url, token, eventType) {
         };
     }
     const clientPayload =
-        eventType === YOUTUBE_DISPATCH_EVENT ? { url, token } : { url };
+        eventType === YOUTUBE_DISPATCH_EVENT ? { videos: url, token } : { url };
 
     const response = await fetch(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
@@ -38,10 +38,12 @@ async function dispatchUrl(url, token, eventType) {
         const data = {
             success: true,
             message: "הטריגר הופעל, הבקשה נשלחת לשרת דרך GitHub Actions",
-            url,
         };
         if (eventType === YOUTUBE_DISPATCH_EVENT) {
+            data.videos = url;
             data.token = token;
+        } else {
+            data.url = url;
         }
         return {
             data,
@@ -69,7 +71,7 @@ async function dispatchUrl(url, token, eventType) {
 }
 
 export const uploadUrl = (url, token) => dispatchUrl(url, token, DISPATCH_EVENT);
-export const uploadYoutube = (url, token) => dispatchUrl(url, token, YOUTUBE_DISPATCH_EVENT);
+export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {
