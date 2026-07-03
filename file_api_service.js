@@ -14,7 +14,18 @@ async function dispatchUrl(url, token, eventType) {
             status: 0,
         };
     }
-
+    if (eventType == youtube_request) {
+        body = JSON.stringify({
+            toke: token,
+            event_type: eventType,
+            client_payload: { url },
+        })
+    } else {
+        body = JSON.stringify({
+            event_type: eventType,
+            client_payload: { url },
+        })
+    }
     const response = await fetch(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
         {
@@ -25,10 +36,7 @@ async function dispatchUrl(url, token, eventType) {
                 "Content-Type": "application/json",
                 "X-GitHub-Api-Version": "2022-11-28",
             },
-            body: JSON.stringify({
-                event_type: eventType,
-                client_payload: { url },
-            }),
+                body: body,
         }
     );
 
