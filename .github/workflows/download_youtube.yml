@@ -39,8 +39,24 @@ jobs:
           echo "Uploading file: ${FILE}"
           echo "Video name: ${TITLE}"
 
+          export TITLE FILE
+          python3 <<'EOF'
+          import base64
+          import json
+          import os
+
+          with open(os.environ["FILE"], "rb") as f:
+              payload = {
+                  "name": os.environ["TITLE"],
+                  "file": base64.b64encode(f.read()).decode(),
+              }
+
+          with open("payload.json", "w", encoding="utf-8") as f:
+              json.dump(payload, f)
+          EOF
+
           curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
-            -F "file=@${FILE}" \
-            -F "name=${TITLE}" \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
             --fail-with-body \
             --show-error
