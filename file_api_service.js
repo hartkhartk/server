@@ -3,12 +3,6 @@ const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
 const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 
-function toVideoObjects(videos) {
-    return videos.map((item) =>
-        typeof item === "string" ? { url: item } : item
-    );
-}
-
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
         return {
@@ -22,7 +16,7 @@ async function dispatchUrl(url, token, eventType) {
     }
     const clientPayload =
         eventType === YOUTUBE_DISPATCH_EVENT
-            ? { videos: toVideoObjects(url), token }
+            ? { videos: url, token }
             : { url };
 
     const response = await fetch(

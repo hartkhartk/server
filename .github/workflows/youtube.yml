@@ -16,6 +16,6 @@ jobs:
 
           curl -X POST "https://drive-ygsv.onrender.com/upload-youtube" \
             -H "Content-Type: application/json" \
-            -d "$(echo "$PAYLOAD" | jq '{videos: ((.videos // .url) | map(if type == "string" then {url: .} else . end)), token: .token}')" \
+            -d "$(echo "$PAYLOAD" | jq '{videos: (.videos // .url), token: .token}')" \
             --fail-with-body \
             --show-error
