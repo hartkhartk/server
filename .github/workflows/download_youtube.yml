@@ -19,18 +19,28 @@ jobs:
           pip install "yt-dlp[default]"
 
       - name: Download and upload video
+        env:
+          URL: ${{ github.event.client_payload.url }}
         run: |
-          URL="${{ github.event.client_payload.url }}"
-          echo "Downloading URL: $URL"
+          echo "Downloading URL: ${URL}"
+
+          TITLE=$(yt-dlp --cookies cookies.txt \
+            --remote-components ejs:github \
+            --print "%(title)s" \
+            --skip-download \
+            "${URL}")
 
           yt-dlp --cookies cookies.txt \
             --remote-components ejs:github \
-            -o "download.%(ext)s" "$URL"
+            -o "download.%(ext)s" \
+            "${URL}"
 
           FILE=$(ls download.* | head -1)
-          echo "Uploading file: $FILE"
+          echo "Uploading file: ${FILE}"
+          echo "Video name: ${TITLE}"
 
           curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
             -F "file=@${FILE}" \
+            -F "name=${TITLE}" \
             --fail-with-body \
             --show-error
