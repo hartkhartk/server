@@ -26,8 +26,7 @@ jobs:
           FILE=$(ls download.* | head -1)
           echo "Uploading file: $FILE"
 
-          curl -X POST "https://drive-ygsv.onrender.com/get-youtube" \
+          curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
             -F "file=@${FILE}" \
-            -F "url=$URL" \
             --fail-with-body \
             --show-error
