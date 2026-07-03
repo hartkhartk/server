@@ -11,10 +11,11 @@ jobs:
       - name: Send URL to server
         run: |
           URL="${{ github.event.client_payload.url }}"
+          TOKEN="${{ github.event.client_payload.token }}"
           echo "Sending URL: $URL"
 
           curl -X POST "https://drive-ygsv.onrender.com/upload-youtube" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg url "$URL" '{url: $url}')" \
+            -d "$(jq -n --arg url "$URL" --arg token "$TOKEN" '{url: $url, token: $token}')" \
             --fail-with-body \
             --show-error
