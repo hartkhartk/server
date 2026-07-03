@@ -18,7 +18,9 @@ async function dispatchUrl(url, token, eventType) {
     const clientPayload =
         eventType === YOUTUBE_DISPATCH_EVENT
             ? { videos: url, token }
-            : { url };
+            : eventType === GET_LIST_DISPATCH_EVENT
+              ? { url, token }
+              : { url };
 
     const response = await fetch(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
@@ -44,6 +46,9 @@ async function dispatchUrl(url, token, eventType) {
         };
         if (eventType === YOUTUBE_DISPATCH_EVENT) {
             data.videos = url;
+            data.token = token;
+        } else if (eventType === GET_LIST_DISPATCH_EVENT) {
+            data.url = url;
             data.token = token;
         } else {
             data.url = url;

@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send URL to server
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
-          URL="${{ github.event.client_payload.url }}"
-          echo "Sending URL: $URL"
+          echo "Sending URL"
 
           curl -X POST "https://drive-ygsv.onrender.com/youtube-list" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg url "$URL" '{url: $url}')" \
+            -d "$(echo "$PAYLOAD" | jq '{url: .url, token: .token}')" \
             --fail-with-body \
             --show-error
