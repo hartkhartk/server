@@ -2,6 +2,7 @@ const GITHUB_OWNER = "hartkhartk";
 const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
 const YOUTUBE_DISPATCH_EVENT = "youtube_request";
+const GET_LIST_DISPATCH_EVENT = "get_list";
 
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
@@ -74,6 +75,8 @@ async function dispatchUrl(url, token, eventType) {
 
 export const uploadUrl = (url, token) => dispatchUrl(url, token, DISPATCH_EVENT);
 export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
+export const getList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
+export const getYoutubeList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {

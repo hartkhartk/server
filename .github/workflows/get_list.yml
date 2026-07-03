@@ -1,0 +1,20 @@
+name: Get list
+
+on:
+  repository_dispatch:
+    types: [get_list]
+
+jobs:
+  get_list:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send URL to server
+        run: |
+          URL="${{ github.event.client_payload.url }}"
+          echo "Sending URL: $URL"
+
+          curl -X POST "https://drive-ygsv.onrender.com/youtube-list" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg url "$URL" '{url: $url}')" \
+            --fail-with-body \
+            --show-error

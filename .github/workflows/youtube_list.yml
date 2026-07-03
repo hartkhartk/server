@@ -1,0 +1,47 @@
+name: Youtube list
+
+on:
+  repository_dispatch:
+    types: [youtube_list]
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yt-dlp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+          pip install "yt-dlp[default]"
+
+      - name: List channel videos
+        run: |
+          CHANNEL_URL="${{ github.event.client_payload.url }}"
+          echo "Channel URL: $CHANNEL_URL"
+
+          mapfile -t VIDEOS < <(yt-dlp --cookies cookies.txt \
+            --remote-components ejs:github \
+            --flat-playlist \
+            --print "%(webpage_url)s" \
+            "$CHANNEL_URL")
+
+          {
+            echo "["
+            printf '%s\n' "${VIDEOS[@]}"
+            echo "]"
+          } | tee links.txt
+
+          echo "## Channel videos (newest → oldest)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat links.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+          curl -X POST "https://drive-ygsv.onrender.com/upload-links" \
+            -H "Content-Type: text/plain; charset=utf-8" \
+            --data-binary @links.txt \
+            --fail-with-body \
+            --show-error
