@@ -21,8 +21,7 @@ jobs:
       - name: List channel videos
         run: |
           CHANNEL_URL="${{ github.event.client_payload.url }}"
-          echo "Channel URL: $CHANNEL_URL"
-
+          echo "Channel URL: $5
           mapfile -t VIDEOS < <(yt-dlp --cookies cookies.txt \
             --remote-components ejs:github \
             --flat-playlist \
