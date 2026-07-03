@@ -19,14 +19,16 @@ jobs:
           pip install "yt-dlp[default]"
 
       - name: List channel videos
+        env:
+          CHANNEL_URL: ${{ github.event.client_payload.url }}
         run: |
-          CHANNEL_URL="${{ github.event.client_payload.url }}"
-          echo "Channel URL: $5
+          echo "Channel URL: ${CHANNEL_URL}"
+
           mapfile -t VIDEOS < <(yt-dlp --cookies cookies.txt \
             --remote-components ejs:github \
             --flat-playlist \
             --print "%(webpage_url)s" \
-            "$CHANNEL_URL")
+            "${CHANNEL_URL}")
 
           {
             echo "["
