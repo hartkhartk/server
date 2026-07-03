@@ -52,18 +52,25 @@ function showResponse(data, status) {
     responseBody.textContent = formatResponseBody(data, status);
 }
 
+function parseUrls(text) {
+    return text
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+}
+
 uploadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const url = urlInput.value.trim();
+    const urls = parseUrls(urlInput.value);
     const token = tokenInput.value.trim();
-    if (!url || !token) return;
+    if (!urls.length || !token) return;
 
     uploadBtn.disabled = true;
     uploadBtn.textContent = "מעלה...";
 
     try {
-        const { data, status } = await uploadYoutube(url, token);
+        const { data, status } = await uploadYoutube(urls, token);
         showResponse(data, status);
 
         if (data.success) {

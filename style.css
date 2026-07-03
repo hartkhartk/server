@@ -85,7 +85,8 @@ header p {
 }
 
 input[type="url"],
-input[type="password"] {
+input[type="password"],
+textarea {
     flex: 1;
     min-width: 0;
     width: 100%;
@@ -97,10 +98,13 @@ input[type="password"] {
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.15s;
+    font-family: inherit;
+    resize: vertical;
 }
 
 input[type="url"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+textarea:focus {
     border-color: var(--accent);
 }
 

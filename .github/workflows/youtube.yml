@@ -8,14 +8,12 @@ jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-      - name: Send URL to server
+      - name: Send URLs to server
         run: |
-          URL="${{ github.event.client_payload.url }}"
-          TOKEN="${{ github.event.client_payload.token }}"
-          echo "Sending URL: $URL"
+          echo "Sending URLs"
 
           curl -X POST "https://drive-ygsv.onrender.com/upload-youtube" \
             -H "Content-Type: application/json" \
-            -d "$(jq -n --arg url "$URL" --arg token "$TOKEN" '{url: $url, token: $token}')" \
+            -d '${{ toJson(github.event.client_payload) }}' \
             --fail-with-body \
             --show-error
