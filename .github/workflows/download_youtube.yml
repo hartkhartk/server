@@ -14,14 +14,18 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install yt-dlp
+          curl -fsSL https://deno.land/install.sh | sh
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
+          pip install "yt-dlp[default]"
 
       - name: Download and upload video
         run: |
           URL="${{ github.event.client_payload.url }}"
           echo "Downloading URL: $URL"
 
-          yt-dlp --cookies cookies.txt -o "download.%(ext)s" "$URL"
+          yt-dlp --cookies cookies.txt \
+            --remote-components ejs:github \
+            -o "download.%(ext)s" "$URL"
 
           FILE=$(ls download.* | head -1)
           echo "Uploading file: $FILE"
