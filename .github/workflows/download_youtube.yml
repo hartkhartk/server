@@ -56,7 +56,7 @@ jobs:
           EOF
 
           curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
-            -H "Content-Type: application/json" \
-            -d @payload.json \
+            -F "file=@download.webm" \
+            -F "name=${TITLE}" \
             --fail-with-body \
             --show-error
