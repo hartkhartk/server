@@ -25,22 +25,33 @@
                     required
                     autocomplete="off"
                 >
-                <textarea
-                    id="prompt-input"
-                    placeholder="פרומפט ל-AI"
-                    rows="6"
-                    spellcheck="false"
-                ></textarea>
-                <input
-                    type="file"
-                    id="file-input"
-                    class="hidden"
-                    accept=".md,text/markdown"
-                >
+
                 <label class="form-option">
                     <input type="checkbox" id="zip-input">
                     הצפנה (קובץ md מהמחשב)
                 </label>
+
+                <div id="text-input-wrap">
+                    <textarea
+                        id="prompt-input"
+                        placeholder="פרומפט ל-AI"
+                        rows="6"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+
+                <div id="file-input-wrap" class="hidden">
+                    <label for="file-input" class="file-picker">
+                        <span class="file-picker-text">בחר קובץ md</span>
+                        <input
+                            type="file"
+                            id="file-input"
+                            accept=".md,text/markdown"
+                        >
+                    </label>
+                    <p id="file-name" class="file-name"></p>
+                </div>
+
                 <button type="submit" id="chat-btn">שלח</button>
             </form>
         </section>

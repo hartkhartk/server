@@ -176,7 +176,38 @@ button:disabled {
 }
 
 .hidden {
+    display: none !important;
+}
+
+.file-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.file-picker:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover);
+}
+
+.file-picker input[type="file"] {
     display: none;
+}
+
+.file-name {
+    color: var(--muted);
+    font-size: 0.85rem;
+    min-height: 1.25rem;
 }
 
 .response-section.success {

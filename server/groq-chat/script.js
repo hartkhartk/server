@@ -2,8 +2,11 @@ import { groqChat } from "../../file_api_service.js";
 
 const toast = document.getElementById("toast");
 const chatForm = document.getElementById("chat-form");
+const textInputWrap = document.getElementById("text-input-wrap");
+const fileInputWrap = document.getElementById("file-input-wrap");
 const promptInput = document.getElementById("prompt-input");
 const fileInput = document.getElementById("file-input");
+const fileName = document.getElementById("file-name");
 const zipInput = document.getElementById("zip-input");
 const tokenInput = document.getElementById("token-input");
 const chatBtn = document.getElementById("chat-btn");
@@ -11,7 +14,16 @@ const responseSection = document.getElementById("response-section");
 const responseStatus = document.getElementById("response-status");
 const responseBody = document.getElementById("response-body");
 
-if (!chatForm || !promptInput || !fileInput || !tokenInput || !chatBtn) {
+if (
+    !chatForm ||
+    !textInputWrap ||
+    !fileInputWrap ||
+    !promptInput ||
+    !fileInput ||
+    !zipInput ||
+    !tokenInput ||
+    !chatBtn
+) {
     throw new Error("שגיאה בטעינת הדף. נסה לרענן עם Ctrl+Shift+R");
 }
 
@@ -64,25 +76,35 @@ function readFileAsText(file) {
 }
 
 function updateInputMode() {
-    const useFile = zipInput?.checked ?? false;
+    const useFile = zipInput.checked;
 
-    promptInput.classList.toggle("hidden", useFile);
-    fileInput.classList.toggle("hidden", !useFile);
+    textInputWrap.classList.toggle("hidden", useFile);
+    fileInputWrap.classList.toggle("hidden", !useFile);
     promptInput.required = !useFile;
     fileInput.required = useFile;
 
     if (!useFile) {
         fileInput.value = "";
+        if (fileName) fileName.textContent = "";
     }
 }
 
-zipInput?.addEventListener("change", updateInputMode);
+zipInput.addEventListener("change", updateInputMode);
+zipInput.addEventListener("click", updateInputMode);
+
+fileInput.addEventListener("change", () => {
+    const file = fileInput.files?.[0];
+    if (fileName) {
+        fileName.textContent = file ? `נבחר: ${file.name}` : "";
+    }
+});
+
 updateInputMode();
 
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const zip = zipInput?.checked ?? false;
+    const zip = zipInput.checked;
     const token = tokenInput.value.trim();
     if (!token) return;
 
@@ -115,7 +137,10 @@ chatForm.addEventListener("submit", async (event) => {
         filename = file.name;
     } else {
         prompt = promptInput.value.trim();
-        if (!prompt) return;
+        if (!prompt) {
+            showToast("נא להזין פרומפט", "error");
+            return;
+        }
     }
 
     chatBtn.disabled = true;
@@ -129,7 +154,8 @@ chatForm.addEventListener("submit", async (event) => {
             showToast(data.message || "הבקשה נשלחה בהצלחה", "success");
             promptInput.value = "";
             fileInput.value = "";
-            if (zipInput) zipInput.checked = false;
+            if (fileName) fileName.textContent = "";
+            zipInput.checked = false;
             updateInputMode();
         } else {
             showToast(extractError(data), "error");
