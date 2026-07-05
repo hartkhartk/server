@@ -21,7 +21,9 @@ async function dispatchUrl(url, token, eventType) {
             ? { videos: url, token }
             : eventType === GET_LIST_DISPATCH_EVENT
               ? { url, token }
-              : { url };
+              : eventType === GROQ_CHAT_DISPATCH_EVENT
+                ? { prompt: url }
+                : { url };
 
     const response = await fetch(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
@@ -51,6 +53,8 @@ async function dispatchUrl(url, token, eventType) {
         } else if (eventType === GET_LIST_DISPATCH_EVENT) {
             data.url = url;
             data.token = token;
+        } else if (eventType === GROQ_CHAT_DISPATCH_EVENT) {
+            data.prompt = url;
         } else {
             data.url = url;
         }
@@ -83,138 +87,7 @@ export const uploadUrl = (urls, token) => dispatchUrl(urls, token, DISPATCH_EVEN
 export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
 export const getList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
 export const getYoutubeList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
-
-export async function groqChat(prompt, token) {
-    if (!token) {
-        return {
-            data: { success: false, error: "חסר GitHub Token" },
-            ok: false,
-            status: 0,
-        };
-    }
-
-    const trimmedPrompt = prompt?.trim();
-    if (!trimmedPrompt) {
-        return {
-            data: { success: false, error: "חסר פרומפט" },
-            ok: false,
-            status: 0,
-        };
-    }
-
-    const clientPayload = { prompt: trimmedPrompt };
-
-    const response = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
-        {
-            method: "POST",
-            headers: {
-                Accept: "application/vnd.github+json",
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                "X-GitHub-Api-Version": "2022-11-28",
-            },
-            body: JSON.stringify({
-                event_type: GROQ_CHAT_DISPATCH_EVENT,
-                client_payload: clientPayload,
-            }),
-        }
-    );
-
-    if (response.status === 204) {
-        return {
-            data: {
-                success: true,
-                message: "הטריגר הופעל, הבקשה נשלחת לשרת דרך GitHub Actions",
-                prompt: trimmedPrompt,
-            },
-            ok: true,
-            status: response.status,
-        };
-    }
-
-    let errorData = {};
-    try {
-        errorData = await response.json();
-    } catch {
-        errorData = {};
-    }
-
-    return {
-        data: {
-            success: false,
-            error: getDispatchErrorMessage(response.status, errorData.message),
-            prompt: trimmedPrompt,
-        },
-        ok: false,
-        status: response.status,
-    };
-}
-
-export async function groqChat(prompt, token) {
-    if (!token) {
-        return {
-            data: { success: false, error: "חסר GitHub Token" },
-            ok: false,
-            status: 0,
-        };
-    }
-    if (!prompt?.trim()) {
-        return {
-            data: { success: false, error: "חסר פרומפט" },
-            ok: false,
-            status: 0,
-        };
-    }
-
-    const clientPayload = { prompt: prompt.trim() };
-
-    const response = await fetch(
-        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
-        {
-            method: "POST",
-            headers: {
-                Accept: "application/vnd.github+json",
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                "X-GitHub-Api-Version": "2022-11-28",
-            },
-            body: JSON.stringify({
-                event_type: GROQ_CHAT_DISPATCH_EVENT,
-                client_payload: clientPayload,
-            }),
-        }
-    );
-
-    if (response.status === 204) {
-        return {
-            data: {
-                success: true,
-                message: "הטריגר הופעל, הבקשה נשלחת לשרת דרך GitHub Actions",
-                prompt: clientPayload.prompt,
-            },
-            ok: true,
-            status: response.status,
-        };
-    }
-
-    let errorData = {};
-    try {
-        errorData = await response.json();
-    } catch {
-        errorData = {};
-    }
-
-    return {
-        data: {
-            success: false,
-            error: getDispatchErrorMessage(response.status, errorData.message),
-            prompt: clientPayload.prompt,
-        },
-        ok: false,
-        status: response.status,
-    };
-}
+export const groqChat = (prompt, token) => dispatchUrl(prompt, token, GROQ_CHAT_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {
