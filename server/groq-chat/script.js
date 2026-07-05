@@ -78,19 +78,20 @@ function readFileAsText(file) {
 function updateInputMode() {
     const useFile = zipInput.checked;
 
-    textInputWrap.classList.toggle("hidden", useFile);
-    fileInputWrap.classList.toggle("hidden", !useFile);
+    textInputWrap.hidden = useFile;
+    fileInputWrap.hidden = !useFile;
     promptInput.required = !useFile;
     fileInput.required = useFile;
 
     if (!useFile) {
         fileInput.value = "";
         if (fileName) fileName.textContent = "";
+    } else {
+        promptInput.value = "";
     }
 }
 
 zipInput.addEventListener("change", updateInputMode);
-zipInput.addEventListener("click", updateInputMode);
 
 fileInput.addEventListener("change", () => {
     const file = fileInput.files?.[0];

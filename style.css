@@ -175,7 +175,8 @@ button:disabled {
     display: none;
 }
 
-.hidden {
+.hidden,
+[hidden] {
     display: none !important;
 }
 
