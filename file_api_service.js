@@ -167,7 +167,7 @@ export async function googleSearch({ text, site, tag }, token) {
     return dispatchPayload(clientPayload, token, GOOGLE_SEARCH_DISPATCH_EVENT);
 }
 
-export async function groqChat(prompt, token) {
+export async function groqChat({ prompt, zip }, token) {
     if (!prompt?.trim()) {
         return {
             data: { success: false, error: "חסר פרומפט" },
@@ -176,5 +176,8 @@ export async function groqChat(prompt, token) {
         };
     }
 
-    return dispatchPayload({ prompt: prompt.trim() }, token, GROQ_CHAT_DISPATCH_EVENT);
+    const clientPayload = { prompt: prompt.trim() };
+    if (zip) clientPayload.zip = true;
+
+    return dispatchPayload(clientPayload, token, GROQ_CHAT_DISPATCH_EVENT);
 }

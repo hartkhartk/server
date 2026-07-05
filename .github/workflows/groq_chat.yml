@@ -16,6 +16,6 @@ jobs:
 
           curl -X POST "https://drive-ygsv.onrender.com/groq-chat" \
             -H "Content-Type: application/json" \
-            -d "$(echo "$PAYLOAD" | jq '{prompt: .prompt}')" \
+            -d "$(echo "$PAYLOAD" | jq '{prompt: .prompt} + (if .zip then {zip: .zip} else {} end)')" \
             --fail-with-body \
             --show-error

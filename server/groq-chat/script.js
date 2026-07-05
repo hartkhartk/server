@@ -3,6 +3,7 @@ import { groqChat } from "../../file_api_service.js";
 const toast = document.getElementById("toast");
 const chatForm = document.getElementById("chat-form");
 const promptInput = document.getElementById("prompt-input");
+const zipInput = document.getElementById("zip-input");
 const tokenInput = document.getElementById("token-input");
 const chatBtn = document.getElementById("chat-btn");
 const responseSection = document.getElementById("response-section");
@@ -56,6 +57,7 @@ chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const prompt = promptInput.value.trim();
+    const zip = zipInput?.checked ?? false;
     const token = tokenInput.value.trim();
     if (!prompt || !token) return;
 
@@ -63,12 +65,13 @@ chatForm.addEventListener("submit", async (event) => {
     chatBtn.textContent = "שולח...";
 
     try {
-        const { data, status } = await groqChat(prompt, token);
+        const { data, status } = await groqChat({ prompt, zip }, token);
         showResponse(data, status);
 
         if (data.success) {
             showToast(data.message || "הבקשה נשלחה בהצלחה", "success");
             promptInput.value = "";
+            if (zipInput) zipInput.checked = false;
         } else {
             showToast(extractError(data), "error");
         }
