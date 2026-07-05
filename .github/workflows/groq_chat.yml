@@ -14,8 +14,20 @@ jobs:
         run: |
           echo "Sending prompt"
 
-          curl -X POST "https://drive-ygsv.onrender.com/groq-chat" \
-            -H "Content-Type: application/json" \
-            -d "$(echo "$PAYLOAD" | jq '{prompt: .prompt} + (if .zip then {zip: .zip} else {} end)')" \
-            --fail-with-body \
-            --show-error
+          if echo "$PAYLOAD" | jq -e '.zip == true' > /dev/null; then
+            FILENAME=$(echo "$PAYLOAD" | jq -r '.filename // "prompt.md"')
+            echo "$PAYLOAD" | jq -r '.prompt' > "$FILENAME"
+            echo "Sending encrypted markdown file: $FILENAME"
+
+            curl -X POST "https://drive-ygsv.onrender.com/groq-chat" \
+              -F "file=@${FILENAME}" \
+              -F "zip=true" \
+              --fail-with-body \
+              --show-error
+          else
+            curl -X POST "https://drive-ygsv.onrender.com/groq-chat" \
+              -H "Content-Type: application/json" \
+              -d "$(echo "$PAYLOAD" | jq '{prompt: .prompt}')" \
+              --fail-with-body \
+              --show-error
+          fi

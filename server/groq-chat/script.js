@@ -3,6 +3,7 @@ import { groqChat } from "../../file_api_service.js";
 const toast = document.getElementById("toast");
 const chatForm = document.getElementById("chat-form");
 const promptInput = document.getElementById("prompt-input");
+const fileInput = document.getElementById("file-input");
 const zipInput = document.getElementById("zip-input");
 const tokenInput = document.getElementById("token-input");
 const chatBtn = document.getElementById("chat-btn");
@@ -10,7 +11,7 @@ const responseSection = document.getElementById("response-section");
 const responseStatus = document.getElementById("response-status");
 const responseBody = document.getElementById("response-body");
 
-if (!chatForm || !promptInput || !tokenInput || !chatBtn) {
+if (!chatForm || !promptInput || !fileInput || !tokenInput || !chatBtn) {
     throw new Error("שגיאה בטעינת הדף. נסה לרענן עם Ctrl+Shift+R");
 }
 
@@ -53,25 +54,83 @@ function showResponse(data, status) {
     responseBody.textContent = formatResponseBody(data, status);
 }
 
+function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(file);
+    });
+}
+
+function updateInputMode() {
+    const useFile = zipInput?.checked ?? false;
+
+    promptInput.classList.toggle("hidden", useFile);
+    fileInput.classList.toggle("hidden", !useFile);
+    promptInput.required = !useFile;
+    fileInput.required = useFile;
+
+    if (!useFile) {
+        fileInput.value = "";
+    }
+}
+
+zipInput?.addEventListener("change", updateInputMode);
+updateInputMode();
+
 chatForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const prompt = promptInput.value.trim();
     const zip = zipInput?.checked ?? false;
     const token = tokenInput.value.trim();
-    if (!prompt || !token) return;
+    if (!token) return;
+
+    let prompt = "";
+    let filename;
+
+    if (zip) {
+        const file = fileInput.files?.[0];
+        if (!file) {
+            showToast("נא לבחור קובץ md", "error");
+            return;
+        }
+        if (!file.name.toLowerCase().endsWith(".md")) {
+            showToast("יש לבחור קובץ עם סיומת .md", "error");
+            return;
+        }
+
+        try {
+            prompt = (await readFileAsText(file)).trim();
+        } catch {
+            showToast("שגיאה בקריאת הקובץ", "error");
+            return;
+        }
+
+        if (!prompt) {
+            showToast("הקובץ ריק", "error");
+            return;
+        }
+
+        filename = file.name;
+    } else {
+        prompt = promptInput.value.trim();
+        if (!prompt) return;
+    }
 
     chatBtn.disabled = true;
     chatBtn.textContent = "שולח...";
 
     try {
-        const { data, status } = await groqChat({ prompt, zip }, token);
+        const { data, status } = await groqChat({ prompt, zip, filename }, token);
         showResponse(data, status);
 
         if (data.success) {
             showToast(data.message || "הבקשה נשלחה בהצלחה", "success");
             promptInput.value = "";
+            fileInput.value = "";
             if (zipInput) zipInput.checked = false;
+            updateInputMode();
         } else {
             showToast(extractError(data), "error");
         }

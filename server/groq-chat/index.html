@@ -28,13 +28,18 @@
                 <textarea
                     id="prompt-input"
                     placeholder="פרומפט ל-AI"
-                    required
                     rows="6"
                     spellcheck="false"
                 ></textarea>
+                <input
+                    type="file"
+                    id="file-input"
+                    class="hidden"
+                    accept=".md,text/markdown"
+                >
                 <label class="form-option">
                     <input type="checkbox" id="zip-input">
-                    הצפנה
+                    הצפנה (קובץ md מהמחשב)
                 </label>
                 <button type="submit" id="chat-btn">שלח</button>
             </form>

@@ -101,6 +101,7 @@ header p {
 input[type="url"],
 input[type="text"],
 input[type="password"],
+input[type="file"],
 textarea {
     flex: 1;
     min-width: 0;
@@ -171,6 +172,10 @@ button:disabled {
 }
 
 .response-section.hidden {
+    display: none;
+}
+
+.hidden {
     display: none;
 }
 
