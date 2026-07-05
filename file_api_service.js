@@ -3,7 +3,6 @@ const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
 const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 const GET_LIST_DISPATCH_EVENT = "get_list";
-const GOOGLE_SEARCH_DISPATCH_EVENT = "google_search";
 
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
