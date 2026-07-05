@@ -16,7 +16,7 @@
         <div id="toast" class="toast" role="status"></div>
 
         <section class="card">
-            <h2>העלאת קובץ מקישור</h2>
+            <h2>העלאת קבצים מקישורים</h2>
             <form id="upload-form" class="upload-form">
                 <input
                     type="password"
@@ -25,16 +25,14 @@
                     required
                     autocomplete="off"
                 >
-                <div class="upload-row">
-                    <input
-                        type="url"
-                        id="url-input"
-                        placeholder="https://example.com/file.pdf"
-                        required
-                        autocomplete="off"
-                    >
-                    <button type="submit" id="upload-btn">העלה</button>
-                </div>
+                <textarea
+                    id="url-input"
+                    placeholder="קישור בשורה&#10;https://example.com/file.pdf"
+                    required
+                    rows="6"
+                    spellcheck="false"
+                ></textarea>
+                <button type="submit" id="upload-btn">העלה</button>
             </form>
         </section>
 

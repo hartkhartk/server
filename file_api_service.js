@@ -78,7 +78,7 @@ async function dispatchUrl(url, token, eventType) {
     };
 }
 
-export const uploadUrl = (url, token) => dispatchUrl(url, token, DISPATCH_EVENT);
+export const uploadUrl = (urls, token) => dispatchUrl(urls, token, DISPATCH_EVENT);
 export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
 export const getList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
 export const getYoutubeList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
