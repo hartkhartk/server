@@ -1,0 +1,21 @@
+name: Google search
+
+on:
+  repository_dispatch:
+    types: [google_search]
+
+jobs:
+  google_search:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send search to server
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
+        run: |
+          echo "Sending search"
+
+          curl -X POST "https://drive-ygsv.onrender.com/google-search" \
+            -H "Content-Type: application/json" \
+            -d "$(echo "$PAYLOAD" | jq '{text, site, tag} | with_entries(select(.value != null and .value != ""))')" \
+            --fail-with-body \
+            --show-error
