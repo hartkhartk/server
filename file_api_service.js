@@ -3,7 +3,6 @@ const GITHUB_REPO = "server";
 const DISPATCH_EVENT = "proxy_request";
 const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 const GET_LIST_DISPATCH_EVENT = "get_list";
-const GROQ_CHAT_DISPATCH_EVENT = "groq_chat";
 
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
@@ -21,9 +20,7 @@ async function dispatchUrl(url, token, eventType) {
             ? { videos: url, token }
             : eventType === GET_LIST_DISPATCH_EVENT
               ? { url, token }
-              : eventType === GROQ_CHAT_DISPATCH_EVENT
-                ? { prompt: url }
-                : { url };
+              : { url };
 
     const response = await fetch(
         `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
@@ -53,8 +50,6 @@ async function dispatchUrl(url, token, eventType) {
         } else if (eventType === GET_LIST_DISPATCH_EVENT) {
             data.url = url;
             data.token = token;
-        } else if (eventType === GROQ_CHAT_DISPATCH_EVENT) {
-            data.prompt = url;
         } else {
             data.url = url;
         }
@@ -87,7 +82,6 @@ export const uploadUrl = (urls, token) => dispatchUrl(urls, token, DISPATCH_EVEN
 export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
 export const getList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
 export const getYoutubeList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
-export const groqChat = (prompt, token) => dispatchUrl(prompt, token, GROQ_CHAT_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {
