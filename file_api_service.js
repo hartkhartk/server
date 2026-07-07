@@ -5,7 +5,6 @@ const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 const GET_LIST_DISPATCH_EVENT = "get_list";
 const GOOGLE_SEARCH_DISPATCH_EVENT = "google_search";
 const GROQ_CHAT_DISPATCH_EVENT = "groq_chat";
-const MIRROR_SITE_DISPATCH_EVENT = "mirror_site";
 
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
@@ -85,7 +84,6 @@ export const uploadUrl = (urls, token) => dispatchUrl(urls, token, DISPATCH_EVEN
 export const uploadYoutube = (videos, token) => dispatchUrl(videos, token, YOUTUBE_DISPATCH_EVENT);
 export const getList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
 export const getYoutubeList = (url, token) => dispatchUrl(url, token, GET_LIST_DISPATCH_EVENT);
-export const mirrorSite = (url, token) => dispatchUrl(url, token, MIRROR_SITE_DISPATCH_EVENT);
 
 function getDispatchErrorMessage(status, message) {
     if (status === 403 && message === "Resource not accessible by personal access token") {
