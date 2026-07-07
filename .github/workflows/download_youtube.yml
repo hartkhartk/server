@@ -24,18 +24,15 @@ jobs:
         run: |
           echo "Downloading URL: ${URL}"
 
-          TITLE=$(yt-dlp --cookies cookies.txt \
+          FILE=$(yt-dlp --cookies cookies.txt \
             --remote-components ejs:github \
-            --print "%(title)s" \
-            --skip-download \
+            -f "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720]+bestaudio/best[height<=720]" \
+            --merge-output-format mp4 \
+            -o "%(title)s.%(ext)s" \
+            --print after_move:filepath \
             "${URL}")
 
-          yt-dlp --cookies cookies.txt \
-            --remote-components ejs:github \
-            -o "download.%(ext)s" \
-            "${URL}"
-
-          FILE=$(ls download.* | head -1)
+          TITLE=$(basename "$FILE" .mp4)
           echo "Uploading file: ${FILE}"
           echo "Video name: ${TITLE}"
 
@@ -56,7 +53,7 @@ jobs:
           EOF
 
           curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
-            -F "file=@download.webm" \
+            -F "file=@${FILE}" \
             -F "name=${TITLE}" \
             --fail-with-body \
             --show-error
