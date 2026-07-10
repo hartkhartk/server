@@ -16,7 +16,7 @@ jobs:
           sudo apt-get install -y ffmpeg
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
-          pip install "yt-dlp[default]"
+          python -m pip install -U "yt-dlp[default]"
 
       - name: Download and upload video
         env:
