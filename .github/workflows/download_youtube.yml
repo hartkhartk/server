@@ -10,19 +10,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install yt-dlp
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           curl -fsSL https://deno.land/install.sh | sh
           echo "$HOME/.deno/bin" >> $GITHUB_PATH
-          python -m pip install -U "yt-dlp[default]"
+          python -m pip install -U "yt-dlp[default]" \
+            google-api-python-client google-auth google-auth-oauthlib
 
-      - name: Download and upload video
+      - name: Download and upload to Google Drive
         env:
-          URL: ${{ github.event.client_payload.url }}
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
+          URL=$(echo "$PAYLOAD" | jq -r '.url')
           echo "Downloading URL: ${URL}"
+
+          echo "$PAYLOAD" | jq 'if .token | type == "string" then .token | fromjson else .token end' > token.json
 
           FILE=$(yt-dlp --cookies cookies.txt \
             --remote-components ejs:github \
@@ -32,28 +36,43 @@ jobs:
             --print after_move:filepath \
             "${URL}")
 
-          TITLE=$(basename "$FILE" .mp4)
-          echo "Uploading file: ${FILE}"
-          echo "Video name: ${TITLE}"
+          echo "Uploading to Google Drive: ${FILE}"
 
-          export TITLE FILE
+          export FILE
           python3 <<'EOF'
-          import base64
           import json
           import os
 
-          with open(os.environ["FILE"], "rb") as f:
-              payload = {
-                  "name": os.environ["TITLE"],
-                  "file": base64.b64encode(f.read()).decode(),
-              }
+          from google.auth.transport.requests import Request
+          from google.oauth2.credentials import Credentials
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
 
-          with open("payload.json", "w", encoding="utf-8") as f:
-              json.dump(payload, f)
+          file_path = os.environ["FILE"]
+          file_name = os.path.basename(file_path)
+
+          with open("token.json", encoding="utf-8") as f:
+              token_info = json.load(f)
+
+          scopes = ["https://www.googleapis.com/auth/drive.file"]
+
+          if token_info.get("type") == "service_account":
+              creds = service_account.Credentials.from_service_account_info(
+                  token_info, scopes=scopes
+              )
+          else:
+              creds = Credentials.from_authorized_user_info(token_info, scopes=scopes)
+              if creds.expired and creds.refresh_token:
+                  creds.refresh(Request())
+
+          service = build("drive", "v3", credentials=creds)
+          media = MediaFileUpload(file_path, mimetype="video/mp4", resumable=True)
+          uploaded = (
+              service.files()
+              .create(body={"name": file_name}, media_body=media, fields="id,name,webViewLink")
+              .execute()
+          )
+
+          print(json.dumps(uploaded, ensure_ascii=False, indent=2))
           EOF
-
-          curl -X POST "https://drive-ygsv.onrender.com/save-youtube" \
-            -F "file=@${FILE}" \
-            -F "name=${TITLE}" \
-            --fail-with-body \
-            --show-error
