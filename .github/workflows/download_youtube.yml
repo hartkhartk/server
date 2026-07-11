@@ -24,6 +24,9 @@ jobs:
           PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           URL=$(echo "$PAYLOAD" | jq -r '.url')
+          echo "=== TOKEN ==="
+          echo "$PAYLOAD" | jq '.token'
+          echo "============="
           echo "Downloading URL: ${URL}"
 
           echo "$PAYLOAD" | jq 'if .token | type == "string" then .token | fromjson else .token end' > token.json
