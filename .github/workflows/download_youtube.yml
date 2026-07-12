@@ -55,7 +55,7 @@ jobs:
           with open("token.json", encoding="utf-8") as f:
               token_info = json.load(f)
 
-          scopes = ["https://www.googleapis.com/auth/drive.file"]
+          scopes = ["https://www.googleapis.com/auth/drive"]
 
           if token_info.get("type") == "service_account":
               creds = service_account.Credentials.from_service_account_info(
