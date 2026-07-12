@@ -32,6 +32,7 @@ jobs:
             -#L999999999 \
             -%v \
             -s0 \
+            -c16  \
             --robots=0 \
             --disable-security-limits \
             -A0
