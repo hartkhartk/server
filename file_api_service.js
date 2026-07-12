@@ -5,6 +5,7 @@ const YOUTUBE_DISPATCH_EVENT = "youtube_request";
 const GET_LIST_DISPATCH_EVENT = "get_list";
 const GOOGLE_SEARCH_DISPATCH_EVENT = "google_search";
 const GROQ_CHAT_DISPATCH_EVENT = "groq_chat";
+const DOWNLOAD_YOUTUBE_DISPATCH_EVENT = "download_youtube";
 
 async function dispatchUrl(url, token, eventType) {
     if (!token) {
@@ -123,7 +124,10 @@ async function dispatchPayload(clientPayload, token, eventType) {
         return {
             data: {
                 success: true,
-                message: "הטריגר הופעל, הבקשה נשלחת לשרת דרך GitHub Actions",
+                message:
+                    eventType === DOWNLOAD_YOUTUBE_DISPATCH_EVENT
+                        ? "הטריגר הופעל, ההורדה והעלאה לדרייב מתבצעות ב-GitHub Actions"
+                        : "הטריגר הופעל, הבקשה נשלחת לשרת דרך GitHub Actions",
                 ...clientPayload,
             },
             ok: true,
@@ -183,4 +187,33 @@ export async function groqChat({ prompt, zip, filename }, token) {
     }
 
     return dispatchPayload(clientPayload, token, GROQ_CHAT_DISPATCH_EVENT);
+}
+
+export async function downloadYoutube(url, driveToken, githubToken) {
+    if (!url?.trim()) {
+        return {
+            data: { success: false, error: "חסר URL" },
+            ok: false,
+            status: 0,
+        };
+    }
+    if (!driveToken || typeof driveToken !== "object") {
+        return {
+            data: { success: false, error: "חסר token.json תקין ל-Google Drive" },
+            ok: false,
+            status: 0,
+        };
+    }
+
+    const result = await dispatchPayload(
+        { url: url.trim(), token: driveToken },
+        githubToken,
+        DOWNLOAD_YOUTUBE_DISPATCH_EVENT
+    );
+
+    if (result.data?.token) {
+        delete result.data.token;
+    }
+
+    return result;
 }
