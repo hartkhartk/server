@@ -36,7 +36,7 @@ jobs:
             -s0 \
             --robots=0 \
             --disable-security-limits \
-            -A1000000000
+            -A0
 
           zip -r "${ZIP_FILE}" "${OUTPUT_DIR}"
 
