@@ -33,6 +33,7 @@ jobs:
             -%v \
             -s0 \
             -c16  \
+            -T100 \
             --robots=0 \
             --disable-security-limits \
             -A0
