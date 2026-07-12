@@ -28,8 +28,6 @@ jobs:
 
           httrack "${URL}" \
             -O "${OUTPUT_DIR}" \
-            "+*" \
-            "-*/" \
             -r99999 \
             -#L999999999 \
             -%v \
@@ -37,6 +35,7 @@ jobs:
             --robots=0 \
             --disable-security-limits \
             -A0
+
           zip -r "${ZIP_FILE}" "${OUTPUT_DIR}"
 
           echo "Uploading to Google Drive: ${ZIP_FILE}"
