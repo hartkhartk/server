@@ -33,10 +33,10 @@ jobs:
             -%v \
             -s0 \
             -c16  \
-            -T100 \
             --robots=0 \
             --disable-security-limits \
-            -A0
+            -A0 \
+            -v
 
           zip -r "${ZIP_FILE}" "${OUTPUT_DIR}"
 
